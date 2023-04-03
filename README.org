@@ -1,0 +1,7 @@
+#+title: Readme
+
+* basex-minor-mode
+
+Functions for running XQuery via [[https://basex.org][BaseX]]
+
+This is a WIP. Really. Use at your own risk.
