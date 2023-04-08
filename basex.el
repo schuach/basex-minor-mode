@@ -13,6 +13,19 @@
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
+;;
 ;;; Commentary:
 ;;
 ;;  Description
@@ -20,7 +33,7 @@
 ;;; Code:
 (require 'ob)
 
-(defvar basex-xquery-preamble nil)
+(defvar basex-xquery-prolog nil)
 (defvar basex-db nil)
 (defun basex-run-region (start end)
   "Runs the region as a basex-command.
@@ -29,7 +42,7 @@ If called non-interactively, start and end are used to determine the region."
   (let ((cmd (concat "basex -i "
                      (or basex-db (read-string "Please enter a database name: " nil t (basex-get-db-names)))
                      " -q "
-                     (shell-quote-argument (or basex-xquery-preamble ""))
+                     (shell-quote-argument (or basex-xquery-prolog ""))
                      "\ "
                      (shell-quote-argument (buffer-substring-no-properties start end)))))
     (if current-prefix-arg
