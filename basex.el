@@ -74,6 +74,12 @@ If called non-interactively, start and end are used to determine the region."
   (interactive)
   (split-string (shell-command-to-string "basex 'db:list()'") "\n"))
 
+(defun basex-set-db ()
+  "Set `basex-db' for this buffer."
+  (interactive)
+  (make-local-variable 'basex-db)
+  (setq basex-db (read-string "Please enter a database name: " nil t (basex-get-db-names))))
+
 (add-to-list 'auto-mode-alist '("\\.xq\\'" . xquery-mode))
 
 (provide 'basex)
