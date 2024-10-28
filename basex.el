@@ -44,14 +44,15 @@ If called non-interactively, start and end are used to determine the region."
                      " -q "
                      (shell-quote-argument (or basex-xquery-prolog ""))
                      "\ "
-                     (shell-quote-argument (buffer-substring-no-properties start end)))))
+                     (shell-quote-argument (buffer-substring-no-properties start end))
+                     " | head -q -n 10000")))
     (if current-prefix-arg
         (async-shell-command-no-window cmd)
       (async-shell-command cmd))))
 
 (defun basex-run-buffer ()
   "Run whole buffer as basex-command."
-    (interactive)
+  (interactive)
   (basex-run-region (point-min) (point-max)))
 
 (defun basex-run-src-block ()
