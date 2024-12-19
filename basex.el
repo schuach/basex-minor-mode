@@ -32,20 +32,28 @@
 ;;
 ;;; Code:
 (require 'ob)
+(require 'f)
 
 (defvar basex-xquery-prolog nil)
 (defvar basex-db nil)
 (defun basex-run-region (start end)
-  "Runs the region as a basex-command.
-If called non-interactively, start and end are used to determine the region."
+  "Run the region as a basex-command.
+If called non-interactively, START and END are used to determine the region.
+If not set, ask for a database and set it for the buffer."
   (interactive "r")
-  (let ((cmd (concat "basex -i "
-                     (or basex-db (read-string "Please enter a database name: " nil t (basex-get-db-names)))
-                     " -q "
-                     (shell-quote-argument (or basex-xquery-prolog ""))
-                     "\ "
-                     (shell-quote-argument (buffer-substring-no-properties start end))
-                     " | head -q -n 10000")))
+  (let* ((tmp-query-file (make-temp-file "basexQuery"))
+         (query (concat
+                 (or basex-xquery-prolog "")
+                 (buffer-substring-no-properties start end)))
+         (cmd (concat "basex -i "
+                      (or basex-db (basex-set-db))
+                      " -Q "
+                      tmp-query-file
+                      ;; hacky: don't dump too much into emacs so it doesn't freeze up
+                      " | head -q -n 10000")))
+
+    (f-write-text query 'utf-8 tmp-query-file)
+    (message cmd)
     (if current-prefix-arg
         (async-shell-command-no-window cmd)
       (async-shell-command cmd))))
@@ -71,6 +79,7 @@ If called non-interactively, start and end are used to determine the region."
   (basex-run-region (line-beginning-position) (line-end-position)))
 
 (defun basex-get-db-names ()
+  "List databases available to BaseX."
   (interactive)
   (split-string (shell-command-to-string "basex 'db:list()'") "\n"))
 
@@ -78,9 +87,11 @@ If called non-interactively, start and end are used to determine the region."
   "Set `basex-db' for this buffer."
   (interactive)
   (make-local-variable 'basex-db)
-  (setq basex-db (read-string "Please enter a database name: " nil t (basex-get-db-names))))
+  (setq basex-db (read-string "Please enter a database name: " nil t (basex-get-db-names)))
+  basex-db)
 
 (add-to-list 'auto-mode-alist '("\\.xq\\'" . xquery-mode))
+(add-to-list 'auto-mode-alist '("\\.xqm\\'" . xquery-mode))
 
 (provide 'basex)
 ;;; basex.el ends here
