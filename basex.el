@@ -33,6 +33,7 @@
 ;;; Code:
 (require 'ob)
 (require 'f)
+(require 's)
 
 (defvar basex-xquery-prolog nil)
 (defvar basex-db nil)
@@ -45,13 +46,12 @@ If not set, ask for a database and set it for the buffer."
          (query (concat
                  (or basex-xquery-prolog "")
                  (buffer-substring-no-properties start end)))
-         (cmd (concat "basex -i "
-                      (or basex-db (basex-set-db))
-                      " -Q "
-                      tmp-query-file
+         (db-name (or basex-db (basex-set-db)))
+         (cmd (concat "basex"
+                      (if (s-present? db-name) (concat " -i " db-name))
+                      " -Q " tmp-query-file
                       ;; hacky: don't dump too much into emacs so it doesn't freeze up
                       " | head -q -n 10000")))
-
     (f-write-text query 'utf-8 tmp-query-file)
     (message cmd)
     (if current-prefix-arg
@@ -87,7 +87,7 @@ If not set, ask for a database and set it for the buffer."
   "Set `basex-db' for this buffer."
   (interactive)
   (make-local-variable 'basex-db)
-  (setq basex-db (read-string "Please enter a database name: " nil t (basex-get-db-names)))
+  (setq basex-db (read-string "Please enter a database name: " nil t '(nil (basex-get-db-names))))
   basex-db)
 
 (add-to-list 'auto-mode-alist '("\\.xq\\'" . xquery-mode))
