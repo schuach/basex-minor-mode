@@ -9,7 +9,7 @@
 ;; Version: 0.0.1
 ;; Keywords: processing languages xquery basex
 ;; Homepage: https://github.com/ss/basex
-;; Package-Requires: ((emacs "28.1"))
+;; Package-Requires: ((emacs "28.1") (s "1.13.1") (f "0.21.0"))
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -35,8 +35,15 @@
 (require 'f)
 (require 's)
 
-(defvar basex-xquery-prolog nil)
-(defvar basex-db nil)
+(defvar
+  "XQuery prolog to prepend to every query.
+The idea here is to have namespaces, global variables etc. available even when
+only part of the buffer is evaluated."
+  basex-xquery-prolog nil)
+(defvar
+  "Database or file to bind to context."
+  basex-db nil)
+
 (defun basex-run-region (start end)
   "Run the region as a basex-command.
 If called non-interactively, START and END are used to determine the region.
