@@ -35,14 +35,11 @@
 (require 'f)
 (require 's)
 
-(defvar
+(defvar basex-xquery-prolog nil
   "XQuery prolog to prepend to every query.
 The idea here is to have namespaces, global variables etc. available even when
-only part of the buffer is evaluated."
-  basex-xquery-prolog nil)
-(defvar
-  "Database or file to bind to context."
-  basex-db nil)
+only part of the buffer is evaluated.")
+(defvar basex-db nil "Database or file to bind to context.")
 
 (defun basex-run-region (start end)
   "Run the region as a basex-command.
